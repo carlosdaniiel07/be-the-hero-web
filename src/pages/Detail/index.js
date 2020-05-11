@@ -7,29 +7,35 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-  Linking,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
 
 import styles from './style';
 import logoImg from '../../assets/logo.png';
 
 export default function Detail() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const {incident} = route.params;
 
   function backPage() {
     navigation.goBack();
   }
 
-  function sendMail() {}
+  function sendMail() {
+    Alert.alert(
+      'Indisponível',
+      'Caro doador, esta função não está disponível no momento',
+    );
+  }
 
   function sendWhatsApp() {
-    const phone = '';
-    const message =
-      'Olá APAD, estou entrando em contato pois gostaria de contribuir para o caso "Cadelinha atropelada"';
-
-    Linking.openURL(`whatsapp://send?phone=${phone}&message=${message}`);
+    Alert.alert(
+      'Indisponível',
+      'Caro doador, esta função não está disponível no momento',
+    );
   }
 
   return (
@@ -48,19 +54,16 @@ export default function Detail() {
         showsVerticalScrollIndicator={false}>
         <View style={styles.incidentDetails}>
           <Text style={[styles.incidentProperty, {marginTop: 0}]}>ONG</Text>
-          <Text style={styles.incidentValue}>APAD</Text>
+          <Text style={styles.incidentValue}>{incident.name}</Text>
 
           <Text style={styles.incidentProperty}>Caso</Text>
-          <Text style={styles.incidentValue}>Cadelinha atropelada</Text>
+          <Text style={styles.incidentValue}>{incident.title}</Text>
 
           <Text style={styles.incidentProperty}>Descrição</Text>
-          <Text style={styles.incidentValue}>
-            A cadelinha Jolie foi atropelada por um carro no bairro Santana e
-            que passar por uma cirurgia as pressas!
-          </Text>
+          <Text style={styles.incidentValue}>{incident.description}</Text>
 
           <Text style={styles.incidentProperty}>Valor</Text>
-          <Text style={styles.incidentValue}>R$ 120,00</Text>
+          <Text style={styles.incidentValue}>R$ {incident.value}</Text>
         </View>
 
         <View style={styles.actions}>

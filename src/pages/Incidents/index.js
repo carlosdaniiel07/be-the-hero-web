@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {
   Text,
@@ -12,13 +12,27 @@ import Icon from 'react-native-vector-icons/Feather';
 
 import styles from './style';
 import logoImg from '../../assets/logo.png';
+import api from '../../services/api';
 
 export default function Incidents() {
   const navigation = useNavigation();
+  const [incidents, setIncidents] = useState([]);
+  const [totalIncidents, setTotalIncidents] = useState(0);
 
-  function navigateToDetail() {
-    navigation.navigate('Detail');
+  function navigateToDetail(incident) {
+    navigation.navigate('Detail', {incident});
   }
+
+  async function loadIncidents() {
+    const response = await api.get('incidents');
+
+    setIncidents(response.data.data);
+    setTotalIncidents(response.data.count);
+  }
+
+  useEffect(() => {
+    loadIncidents();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -27,7 +41,7 @@ export default function Incidents() {
       <View style={styles.header}>
         <Image source={logoImg} />
         <Text style={styles.headerText}>
-          Total de <Text style={styles.headerTextBold}>0 casos</Text>
+          Total de <Text style={styles.headerTextBold}>{totalIncidents} caso(s)</Text>
         </Text>
       </View>
 
@@ -38,23 +52,23 @@ export default function Incidents() {
 
       <FlatList
         style={styles.incidentsList}
-        data={[1, 2, 3]}
-        keyExtractor={incident => String(incident)}
+        data={incidents}
+        keyExtractor={incident => String(incident.id)}
         showsVerticalScrollIndicator={false}
-        renderItem={() => (
+        renderItem={({item: incident}) => (
           <View style={styles.incident}>
             <Text style={styles.incidentProperty}>ONG</Text>
-            <Text style={styles.incidentValue}>APAD</Text>
+            <Text style={styles.incidentValue}>{incident.name}</Text>
 
             <Text style={styles.incidentProperty}>Caso</Text>
-            <Text style={styles.incidentValue}>Cadelinha atropelada</Text>
+            <Text style={styles.incidentValue}>{incident.title}</Text>
 
             <Text style={styles.incidentProperty}>Valor</Text>
-            <Text style={styles.incidentValue}>R$ 120,00</Text>
+            <Text style={styles.incidentValue}>R$ {incident.value}</Text>
 
             <TouchableOpacity
               style={styles.incidentDetailsButton}
-              onPress={navigateToDetail}>
+              onPress={() => navigateToDetail(incident)}>
               <Text style={styles.incidentDetailsButtonText}>
                 Ver mais detalhes
               </Text>
