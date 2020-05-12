@@ -6,6 +6,7 @@ export default StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: StatusBar.currentHeight,
+    paddingBottom: 10,
   },
   header: {
     flexDirection: 'row',
@@ -60,5 +61,16 @@ export default StyleSheet.create({
     color: '#e02041',
     fontSize: 15,
     fontWeight: 'bold',
+  },
+  loadButton: {
+    backgroundColor: '#e02041',
+    borderRadius: 8,
+    height: 38,
+    width: '100%',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  loadButtonText: {
+    color: '#fff',
   },
 });

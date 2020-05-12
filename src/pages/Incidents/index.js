@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   FlatList,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 
@@ -18,16 +19,23 @@ export default function Incidents() {
   const navigation = useNavigation();
   const [incidents, setIncidents] = useState([]);
   const [totalIncidents, setTotalIncidents] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   function navigateToDetail(incident) {
     navigation.navigate('Detail', {incident});
   }
 
-  async function loadIncidents() {
-    const response = await api.get('incidents');
+  async function loadIncidents(loadNextPage = false) {
+    const response = await api.get('incidents', {params: {page: currentPage}});
 
-    setIncidents(response.data.data);
-    setTotalIncidents(response.data.count);
+    setIncidents(incidents.concat(response.data.data));
+    setTotalIncidents(Number(response.data.count));
+
+    if (loadNextPage && incidents.length === totalIncidents) {
+      Alert.alert('Aviso', 'Não existe mais nenhum caso pra ser carregado!');
+    } else {
+      setCurrentPage(currentPage + 1);
+    }
   }
 
   useEffect(() => {
@@ -41,7 +49,8 @@ export default function Incidents() {
       <View style={styles.header}>
         <Image source={logoImg} />
         <Text style={styles.headerText}>
-          Total de <Text style={styles.headerTextBold}>{totalIncidents} caso(s)</Text>
+          Total de{' '}
+          <Text style={styles.headerTextBold}>{totalIncidents} caso(s)</Text>
         </Text>
       </View>
 
@@ -76,6 +85,15 @@ export default function Incidents() {
               <Icon name="arrow-right" size={16} color="#e02041" />
             </TouchableOpacity>
           </View>
+        )}
+        ListFooterComponent={() => (
+          <TouchableOpacity
+            style={styles.loadButton}
+            onPress={() => {
+              loadIncidents(true);
+            }}>
+            <Text style={styles.loadButtonText}>Carregar mais</Text>
+          </TouchableOpacity>
         )}
       />
     </View>
